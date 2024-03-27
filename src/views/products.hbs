@@ -1,0 +1,56 @@
+<header>
+    <div>
+        <a class="logo" href="/products"><h1 >Ecommerce</h1></a>
+        </div>
+    <div>
+        <nav>
+            <a class = "box" id="chat-btn">Chat</a>
+            <a class = "box"id="role-btn">Rol</a>
+            <a href = "/manager" class = "box" id="manager-btn">Manager</a>
+            <a href ="/login"class = "box" id="logout-btn">Salir</a>
+        </nav>
+    </div>
+    <div class="user">
+        <p>Email:<span class="user-email">{{user.email}}</span></p>
+        <p>Rol:{{user.role}}</p>
+        <p>ID Carrito: {{user.cart._id}}</p>
+        
+    </div>
+</header>
+<section>
+    <div class="container">
+        <input type="checkbox" id="check">
+        <div class="login form" id="login">
+            <details>
+                <summary>Carrito</summary>
+                {{#each user.cart.products}}
+                
+                {{/each}}
+            </details>
+        </div>
+    </div>
+<div>
+    <div class="gallery">
+    <ul class="products">
+    {{#each products}}
+    <li class="product">
+
+    <ul class="thumbnails">
+    {{#each thumbnails}}
+    <li><img class="image" src="{{this}}" alt="Thumbnail"></li>
+    {{/each}}
+    </ul>
+     <p>ID: {{_id}}</p> 
+     <p>Title: {{title}}</p> 
+    <p>Description: {{description}}</p> 
+    <p>Code: {{code}}</p> 
+    <p>Price: ${{price}}</p> 
+    <p>Status: {{status}}</p> 
+    <p>Stock: {{stock}}</p> 
+    <p>Category: {{category}}</p> 
+    <p>Owner: {{owner}}</p> 
+    </li>
+    {{/each}}
+    </ul>
+    </div>
+</div>

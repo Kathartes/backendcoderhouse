@@ -1,0 +1,59 @@
+<div class="container">
+<div class="login form">
+      <header>Signup</header>
+      <form id="registerForm" >
+        <input type="text" id="first_name" name="first_name" placeholder="Nombre">
+        <input type="text" id="last_name" name="last_name" placeholder="Apellido">
+        <input type="email" id="email" name="email" placeholder="Email">
+        <input type="password" id="password" name="password" placeholder="Password">
+        <input type="number" id="age" name="age" placeholder="Age">
+        <select id="roles">
+          <option value="" disabled selected>Rol</option>
+          <option value="user">User</option>
+          <option value="premium">Premium</option>
+        </select>
+
+        <button type="submit" class="button" >Signup</button>
+      </form>
+      <div class="signup">
+        <span class="signup">Ya tienes una cuenta?
+         <label for="check"><a href="/login">Login</a></label>
+        </span>
+      </div>
+  </div>
+</div>
+
+<script>
+  
+  document.getElementById('registerForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const firstName = document.getElementById('first_name').value;
+    const lastName = document.getElementById('last_name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const age = document.getElementById('age').value;
+    const select = document.getElementById("roles");
+    const role = select.value;
+
+    fetch('/api/users/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({firstName, lastName, email, password, age, role}),
+    })
+    .then(response => response.json())
+    .then(data => {
+       if (data.status === 'success') {
+
+            window.location.href = data.redirectUrl;
+        } else {
+            console.error('Error:', data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+    
+    });
+
+</script>

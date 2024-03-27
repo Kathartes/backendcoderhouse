@@ -1,0 +1,314 @@
+
+<header>
+    <div>
+        <a class="logo" href="/products"><h1 >Ecommerce</h1></a>
+        </div>
+    <div>
+        <nav>
+            <a class = "box" id="chat-btn">Chat</a>
+            <a class = "box"id="role-btn">Rol</a>
+            <a href = "/manager" class = "box" id="manager-btn">Manager</a>
+            <a href ="/login"class = "box" id="logout-btn">Salir</a>
+        </nav>
+    </div>
+    
+        <div class="user">
+
+            <p class="user-email" id="user-email" >{{user.email}}</p>
+            <p>Rol:{{user.role}}</p>
+            <p>ID Carrito: {{user.cart._id}}</p>
+            
+        </div>
+</header>
+<section>
+    <div class="container">
+        <input type="checkbox" id="check">
+        <div class="login form" id="login">
+            <details>
+                <summary>Agregar producto</summary>
+                <form id="addForm">
+                    <input type="text" id="title" name="title" placeholder="Nombre de producto" required>
+                    <input type="text" id="description" name="description" placeholder="Descripcion" required>
+                    <input type="text" id="code" name="code" placeholder="Codigo" required>
+                    <input type="number" id="price" name="price" placeholder="Precio" required>
+                    <input type="number" id="stock" name="stock" placeholder="Stock" required>
+                    <input type="text" id="category" name="category" placeholder="Categoria" required>
+                    <label for="thumbnails">Imagen:</label>
+                    <input type="file" id="thumbnails" name="thumbnails" >
+                    <button type="submit" class="button" id="createProductBtn" >Agregar producto</button>
+                </form>
+            </details>
+            <details>
+                    <summary>Modificar producto</summary>
+                    <form >
+                        <input type="text" id="updateProductId" name="updateProductId" placeholder="ID del producto (requerido)" required><br>
+                    <input type="text" id="updateTitle" name="title" placeholder="Nombre de producto" >
+                    <input type="text" id="updateDescription" name="description" placeholder="Descripcion" >
+                    <input type="text" id="updateCode" name="code" placeholder="Codigo" >
+                    <input type="number" id="updatePrice" name="price" placeholder="Precio">
+                    <input type="number" id="updateStock" name="stock" placeholder="Stock">
+                    <input type="text" id="updateCategory" name="category" placeholder="Categoria">
+                    <label for="thumbnails">Imagen:</label>
+                    <input type="file" id="updateThumbnails" name="thumbnails">
+                    <button type="button" class="button" id="updateProductBtn" >Agregar producto</button>
+                    </form>
+            </details>
+        
+            <details>
+                <summary>Eliminar producto</summary>
+                    <form id="deleteProductForm">
+                    <input type="text" id="productId" name="productId" placeholder="ID del producto" required>
+                    <button type="button" class="button" id="deleteProductBtn">Eliminar Producto</button>
+                    </form>
+            </details>
+        </div>
+    </div>
+
+    <div >
+                    <div class="gallery">
+                    <ul class="products">
+                        {{#each products}}
+                        <li class="product">
+
+                            <ul class="thumbnails">
+                                {{#each thumbnails}}
+                                <li><img class="image" src="{{this}}" alt="Thumbnail"></li>
+                                {{/each}}
+                            </ul>
+                            <p>ID: {{_id}}</p> 
+                            <p>Title: {{title}}</p> 
+                            <p>Description: {{description}}</p> 
+                            <p>Code: {{code}}</p> 
+                            <p>Price: ${{price}}</p> 
+                            <p>Status: {{status}}</p> 
+                            <p>Stock: {{stock}}</p> 
+                            <p>Category: {{category}}</p> 
+                            <p>Owner: {{owner}}</p> 
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+    </div>
+</section>
+
+<script>
+   document.getElementById('addForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+          
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const code = document.getElementById('code').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const stock = parseInt(document.getElementById('stock').value);
+            const category = document.getElementById('category').value;
+            const owner = document.getElementById('user-email').textContent;
+
+            console.log(title, description, code, price, stock, category, owner);
+
+
+   
+    fetch('/api/products', {
+        method: 'POST',
+        headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title, description, code, price, stock, category, owner }),
+            })
+
+    .then(response => {
+        if (response.ok) {
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('code').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('stock').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('thumbnails').value = '';
+
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+        } else {
+            console.error('Error al crear el producto:', response.statusText);
+        }
+    })
+    .catch(error => console.error('Error al crear el producto:', error));
+
+
+   });
+           
+           
+   /* document.addEventListener('DOMContentLoaded', function () {
+    const userEmail = document.getElementById('user-email').textContent;
+
+    const productCards = document.querySelectorAll('.product');
+
+    document.getElementById('deleteProductBtn').addEventListener('click', deleteProduct);
+    document.getElementById('createProductBtn').addEventListener('click', createProduct);
+    document.getElementById('updateProductBtn').addEventListener('click', updateProduct);
+
+    if (userEmail !== 'adminCoder@coder.com') {
+        productCards.forEach(product => {
+            const ownerEmail = product.querySelector('.owner').textContent;
+            if (ownerEmail !== userEmail) {
+                product.style.display = 'none';
+            }
+        });
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', function () {
+        fetch('/api/users/logout', {
+            method: 'GET',
+            credentials: 'include',
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    console.error('Error en el logout:', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error en el logout:', error));
+    });
+
+    const productButton = document.getElementById('products-btn');
+    if (productButton) {
+        productButton.addEventListener('click', function () {
+            window.location.href = '/products';
+        });
+    }
+});
+
+function deleteProduct() {
+    const productId = document.getElementById('productId').value.trim();
+    fetch(`/api/products/${productId}`, {
+        method: 'DELETE',
+    })
+        .then(response => {
+            if (response.ok) {
+                const productElement = document.getElementById(`product_${productId}`);
+                if (productElement) {
+                    productElement.remove();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                }
+            } else {
+                console.error('Error al eliminar el producto:', response.statusText);
+            }
+        })
+        .catch(error => console.error('Error al eliminar el producto:', error));
+
+    document.getElementById('productId').value = '';
+}
+
+function createProduct() {
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const code = document.getElementById('code').value;
+    const price = parseFloat(document.getElementById('price').value);
+    const stock = parseInt(document.getElementById('stock').value);
+    const category = document.getElementById('category').value;
+    const owner = document.getElementById('user-email').textContent;
+
+    console.log(title, description, code, price, stock, category, owner);
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('code', code);
+    formData.append('price', price);
+    formData.append('stock', stock);
+    formData.append('category', category);
+    formData.append('owner', owner);
+
+    // Verifica si se están obteniendo los valores correctamente
+    console.log(formData.title, formData.description, formData.code, formData.price, formData.stock, formData.category, formData.owner);
+
+    // Realiza la solicitud POST con los datos del formulario
+    fetch('/api/products', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (response.ok) {
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('code').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('stock').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('thumbnails').value = '';
+
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+        } else {
+            console.error('Error al crear el producto:', response.statusText);
+        }
+    })
+    .catch(error => console.error('Error al crear el producto:', error));
+}
+
+
+function updateProduct() {
+    const productId = document.getElementById('updateProductId').value;
+    const updatedProduct = {};
+
+    const titleInput = document.getElementById('updateTitle');
+    if (titleInput.value.trim() !== '') {
+        updatedProduct.title = titleInput.value;
+    }
+
+    const descriptionInput = document.getElementById('updateDescription');
+    if (descriptionInput.value.trim() !== '') {
+        updatedProduct.description = descriptionInput.value;
+    }
+
+    const codeInput = document.getElementById('updateCode');
+    if (codeInput.value.trim() !== '') {
+        updatedProduct.code = codeInput.value;
+    }
+
+    const priceInput = document.getElementById('updatePrice');
+    if (priceInput.value.trim() !== '') {
+        updatedProduct.price = parseFloat(priceInput.value);
+    }
+
+    const stockInput = document.getElementById('updateStock');
+    if (stockInput.value.trim() !== '') {
+        updatedProduct.stock = parseInt(stockInput.value);
+    }
+
+    const categoryInput = document.getElementById('updateCategory');
+    if (categoryInput.value.trim() !== '') {
+        updatedProduct.category = categoryInput.value;
+    }
+
+    const thumbnailsInput = document.getElementById('updateThumbnails');
+    if (thumbnailsInput.value.trim() !== '') {
+        updatedProduct.thumbnails = thumbnailsInput.files;
+    }
+
+    fetch(`/api/products/${productId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedProduct),
+    })
+        .then(response => {
+            if (response.ok) {
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+                console.log('Producto actualizado exitosamente');
+            } else {
+                console.error('Error al actualizar el producto:', response.statusText);
+            }
+        })
+        .catch(error => console.error('Error al actualizar el producto:', error));
+}
+*/
+</script>

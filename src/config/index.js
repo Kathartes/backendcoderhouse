@@ -23,3 +23,14 @@ exports.connectDB = async() => {
     await connect(process.env.MONGO_URI)
     console.log('Conectado a base de datos!!!')
 } 
+
+exports.swaggerOptions = {
+    definition: {
+      openapi: '3.0.1',
+      info: {
+        title: 'Documentacion E-Commerce',
+        description: 'Api Docs para E-Commerce'
+      }
+    },
+    apis: [`${__dirname}/../docs/**/*.yaml`]
+  }

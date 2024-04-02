@@ -5,6 +5,8 @@ class CartRepository {
     }
 
     createCart = async () => await this.dao.create()
+
+    getFromCart = async (cartId, productId) => await this.dao.getFromCart(cartId, productId)
     
     getCart =  async (cartId) => await this.dao.getBy(cartId)
 

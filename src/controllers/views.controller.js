@@ -1,4 +1,4 @@
-const { userService, productService, messageService } = require('../repositories/services')
+const { userService, productService, messageService, cartService } = require('../repositories/services')
 const { configObject } = require('../config/index')
 const jwt = require('jsonwebtoken')
 
@@ -10,15 +10,22 @@ class ViewsController{
         this.userService = userService
         this.productService = productService
         this.messageService = messageService 
+        this.cartService = cartService
     }
     products = async (req, res) => {
         const products = await this.productService.getProduct();
         const token = req.cookies.token
+        
+
+
         if (!token){
             return res.redirect("/login")
         }
         const decodedToken = jwt.verify(token, configObject.jwt_secret_key )
-        res.render('products', { title: 'products', style: 'manager.css', body: 'products', products, user:decodedToken});  
+        const cartId = decodedToken.cartId
+        const cart = await this.cartService.getCart(cartId);
+
+        res.render('products', { title: 'products', style: 'manager.css', body: 'products', products, user:decodedToken, cart});  
 
     }
     users = async (req, res) => {

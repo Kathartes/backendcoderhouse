@@ -1,4 +1,4 @@
-const { userService} = require('../repositories/services.js')
+const { userService , cartService} = require('../repositories/services.js')
 const { createHash, isValidPassword} = require('../utils/hashPassword')
 const { createToken } = require('../utils/jwt')
 const { logger } = require('../utils/logger')
@@ -8,6 +8,7 @@ const { logger } = require('../utils/logger')
 class UserController{
     constructor(){
         this.userService = userService
+        this.cartService = cartService
     }
     getUser = async(req, res)=>{
         try{
@@ -39,6 +40,8 @@ class UserController{
     }
     createUser = async(req,res)=>{
         try{
+        const cart = await this.cartService.createCart();  
+
         const { firstName, lastName, email, password, age, role } = req.body
         console.log( firstName, lastName, email, password, age, role )
         const existingUser = await this.userService.getUserByFilter({ email });
@@ -53,6 +56,7 @@ class UserController{
             email,
             password: await createHash(password),
             age,
+            cart: cart,
             role
         } 
         const result = await this.userService.createUser(user);

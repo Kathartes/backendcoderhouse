@@ -10,8 +10,8 @@ class ticketDaoMongo {
     async getBy(){
         return await this.model.find(filter);
     }
-    async create(){
-        return await this.model.create();
+    async create(ticket){
+        return await this.model.create(ticket);
     } 
 }
 

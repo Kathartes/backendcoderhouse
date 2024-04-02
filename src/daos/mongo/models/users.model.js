@@ -29,9 +29,9 @@ const userSchema = Schema({
         required: true,
         trim: true
       },
-      /*cart: {
-        //type: Types.ObjectId, ref: 'Carts',
-      },*/
+      cart: {
+        type: Types.ObjectId, ref: 'Carts',
+      },
       role: {
         type: String,
         required: true

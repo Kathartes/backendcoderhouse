@@ -6,7 +6,7 @@ const productController = new ProductController();
 
 productRouter.get('/', productController.getProducts)
 
-productRouter.get('/:pname', productController.getProductByFilter)
+productRouter.get('/:pId', productController.getProductByFilter)
 
 productRouter.post('/', productController.createProduct)
 

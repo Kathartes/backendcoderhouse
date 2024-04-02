@@ -10,8 +10,8 @@ class CartDaoMongo {
   async getBy(cartId) {
     return await this.model.findOne({_id: cartId})
   }
-  async getfromCart(cartId,productId) {
-    return await this.model.findOne({_id: cartId, product: {$elemMatch: {productId: productId}}})
+  async getFromCart(cartId,productId) {
+    return await this.model.findOne({_id: cartId, products: {$elemMatch: {productId: productId}}})
   }
   async add(cartId, productId, quantity) {
     return await this.model.findOneAndUpdate(
@@ -34,7 +34,7 @@ class CartDaoMongo {
       )
   }
 
-  async updatequantity(cartId, productId, quantity) {
+  async updateQuantity(cartId, productId, quantity) {
     return await this.model.updateOne(
       { _id: cartId, 'products.productId': productId },
       { $inc: { 'products.$.quantity': quantity } }

@@ -6,7 +6,7 @@ const ticketSchema = Schema({
     
     code: {
         type: String,
-        require: true,
+        required: true,
         unique: true
     },
     purchase_datetime: {
@@ -14,11 +14,11 @@ const ticketSchema = Schema({
         required: true
     },
     amount: {
-        type: number,
-        required: true,
+        type: Number,
+        required: true
     },
     purchaser: {
-        type: string,
+        type: String,
         required: true
     },
 

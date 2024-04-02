@@ -21,8 +21,8 @@ switch( configObject.persistence) {
         /*const MessageDaoMongo = require('./mongo/messageManagerMongo')//crear
         MessageDao = MessageDaoMongo*/
 
-        /*const TicketDaoMongo = require('./mongo/ticketManagerMongo')//crear
-        TicketDao = TicketDaoMongo*/
+        const TicketDaoMongo = require('./mongo/ticketManagerMongo')//crear
+        TicketDao = TicketDaoMongo
 
     break;
 

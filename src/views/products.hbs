@@ -13,7 +13,7 @@
     <div class="user">
         <p>Email:<span class="user-email">{{user.email}}</span></p>
         <p>Rol:{{user.role}}</p>
-        <p>ID Carrito: {{user.cart._id}}</p>
+        <p>ID Carrito: {{user.cart}}</p>
         
     </div>
 </header>
@@ -23,9 +23,17 @@
         <div class="login form" id="login">
             <details>
                 <summary>Carrito</summary>
-                {{#each user.cart.products}}
-                
-                {{/each}}
+                    <ul class="carts">
+                    {{#each cart.product}}
+                    <li class="product">
+                    <p>ID: {{cart.product._id}}</p> 
+                    <p>Title: {{cart.product.title}}</p> 
+                    <p>Code: {{cart.product.code}}</p> 
+                    <p>Price: ${{cart.product.price}}</p> 
+                    </li>
+                    {{/each}}
+                    </ul>
+                    <button type="submit" id="checkoutbtn">Realizar Pedido</button>
             </details>
         </div>
     </div>
@@ -49,8 +57,17 @@
     <p>Stock: {{stock}}</p> 
     <p>Category: {{category}}</p> 
     <p>Owner: {{owner}}</p> 
+    <p>Quantity: </p><input id="quantity" type="number">
+    <button type="button" id="addToCart">Agregar al carrito</button>
     </li>
     {{/each}}
     </ul>
     </div>
 </div>
+
+
+<script>
+    document.getElementById('checkoutBtn').addEventListener('click', checkoutCart);
+
+    
+</script>

@@ -8,7 +8,7 @@ class ProductDaoMongo {
         return await this.model.find();
     }
     async getBy(filter){
-        return await this.model.find(filter);
+        return await this.model.findOne(filter);
     }
     async create(product){
         return await this.model.create(product)

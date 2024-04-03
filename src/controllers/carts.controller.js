@@ -59,21 +59,28 @@ class CartController{
     addProductToCart = async (req, res) => {
         try {
             
-            const { cid, pid } = req.params
-            const  quantity  = req.body.quantity || 1;
-            const cartProduct = await cartService.getFromCart(cid, pid)
-            
-            
+            const cartId = req.params.cid
+            const productId = req.params.pid
+            const quantity  = req.body.quantity || 1;
+            const cartProduct = await this.cartService.getFromCart(cartId, productId)
+            const user = await this.userService.getUserByFilter({cart: cartId})
+            const product = await this.productService.getProductByFilter({ _id: productId})
+
+            console.log(user.email)
+            console.log(product.owner)
             //if (!resp) return res.status(404).json({status: 'error', message: 'Cart not found'})
-            
+            if(user.email === product.owner){
+                console.log("no podes agregar un producto tuyo")
+                throw new Error("Este producto es tuyo")
+            }
             if(cartProduct) {
-                await cartService.updateProductQuantity(cid, pid, quantity)
+                await this.cartService.updateProductQuantity(cartId, productId, quantity)
                 
             }else {
-                 await cartService.addProductToCart(cid, pid, quantity)
+                 await this.cartService.addProductToCart(cartId, productId, quantity)
             }
 
-            console.log(cid, pid, quantity)
+            console.log(cartId, productId, quantity)
 
             res.status(200).json({
                 status: 'success', 

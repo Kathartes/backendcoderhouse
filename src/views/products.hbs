@@ -13,7 +13,7 @@
     <div class="user">
         <p>Email:<span class="user-email">{{user.email}}</span></p>
         <p>Rol:{{user.role}}</p>
-        <p>ID Carrito: {{user.cart}}</p>
+        <p id="cartId">ID Carrito: {{user.cart}}</p>
         
     </div>
 </header>
@@ -48,7 +48,7 @@
     <li><img class="image" src="{{this}}" alt="Thumbnail"></li>
     {{/each}}
     </ul>
-     <p>ID: {{_id}}</p> 
+     <p id="productId">ID: {{_id}}</p> 
      <p>Title: {{title}}</p> 
     <p>Description: {{description}}</p> 
     <p>Code: {{code}}</p> 
@@ -57,7 +57,7 @@
     <p>Stock: {{stock}}</p> 
     <p>Category: {{category}}</p> 
     <p>Owner: {{owner}}</p> 
-    <p>Quantity: </p><input id="quantity" type="number">
+    <p>Quantity: </p><input id="quantity{{_id}}" type="number">
     <button type="button" id="addToCart">Agregar al carrito</button>
     </li>
     {{/each}}
@@ -67,7 +67,27 @@
 
 
 <script>
-    document.getElementById('checkoutBtn').addEventListener('click', checkoutCart);
 
+    document.getElementById('addToCart').addEventListener('click', addToCart);
+    document.getElementById('checkoutBtn').addEventListener('click', checkoutCart);
+    
+
+
+async function addToCart(){
+    const cartId = document.getElementById('cartId')
+    const productId = document.getElementById('productId')
+    const quantityInput = document.getElementById(`quantity${productId}`)
+    const quantity = parseInt(quantityInput.value) || 1;
+
+    fetch(`/api/carts/${cartId}/product/${productId}`,{
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ quantity }),
+    })
+
+}
     
 </script>

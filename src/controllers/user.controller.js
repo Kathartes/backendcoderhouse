@@ -43,22 +43,28 @@ class UserController{
         const cart = await this.cartService.createCart();  
 
         const { firstName, lastName, email, password, age, role } = req.body
-        console.log( firstName, lastName, email, password, age, role )
+
+        
         const existingUser = await this.userService.getUserByFilter({ email });
+        
         if (existingUser) {
             console.error('Ese Email ya esta en uso.');
             return { error: 'Ese Email ya está en uso.' };
           }
-    
+          console.log( firstName, lastName, email, cart, password, age, role )
+          console.log(cart._id)
+          const cartId = await this.cartService.getCart({_id : cart._id})
+          console.log (cartId._id + "este es el id del cart")
         const user = {
             first_name: firstName,
             last_name: lastName,
             email,
             password: await createHash(password),
             age,
-            cart: cart,
+            cart: cartId._id,
             role
         } 
+        console.log(user)
         const result = await this.userService.createUser(user);
         console.log(result)
 

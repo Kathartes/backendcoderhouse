@@ -53,9 +53,10 @@ class ProductController{
     }
     updateProduct = async(req,res)=>{
         try{
-        const productId = req.params.pid;
+        console.log(req.params.pId, req.body)
+        const productId = req.params.pId;
         const updatedProduct = await this.productService.updateProduct(productId, req.body);
-        res.json({updatedProduct})
+        res.json({product: updatedProduct})
         }
         catch(error){
             res.status(500).send('Error al modificar el producto')
@@ -63,7 +64,7 @@ class ProductController{
     }
     deleteProduct = async(req,res)=>{
         try {
-        const productId = req.params.pid;
+        const productId = req.params.pId;
         const deletedProduct = await this.productService.deleteProduct(productId);
         res.json({deletedProduct})
         }

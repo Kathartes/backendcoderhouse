@@ -14,9 +14,9 @@ class ProductDaoMongo {
         return await this.model.create(product)
     }
     async update(pId, updatedProduct){
-        return await this.model.findOneAndUpdate({pId: pId},{$set: updatedProduct},{new: true})
+        return await this.model.findOneAndUpdate({_id: pId},{$set: updatedProduct},{new: true})
     }
-    async deletet(pId){
+    async delete(pId){
         return await this.model.findByIdAndDelete(pId)
     }
 }

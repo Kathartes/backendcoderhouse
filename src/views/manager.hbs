@@ -42,7 +42,6 @@
                     <summary>Modificar producto</summary>
                     <form id="updateForm">
                     <input type="text" id="updateProductId" name="updateProductId" placeholder="ID del producto (requerido)" required>
-                    <button type="button" class="button" id="searchProductBtn" >Buscar producto</button>
                     <input type="text" id="updateTitle" name="title" placeholder="Nombre de producto" >
                     <input type="text" id="updateDescription" name="description" placeholder="Descripcion" >
                     <input type="text" id="updateCode" name="code" placeholder="Codigo" >
@@ -51,7 +50,7 @@
                     <input type="text" id="updateCategory" name="category" placeholder="Categoria">
                     <label for="thumbnails">Imagen:</label>
                     <input type="file" id="updateThumbnails" name="thumbnails">
-                    <button type="button" class="button" id="updateProductBtn" >Modificar producto</button>
+                    <button type="submit" class="button" id="updateProductBtn" >Modificar producto</button>
                     </form>
             </details>
         
@@ -144,92 +143,104 @@
             event.preventDefault();
 
             const productId = document.getElementById('updateProductId').value;
-            const title = document.getElementById('updateTitle').value;
-            const description = document.getElementById('updateDescription').value;
-            const code = document.getElementById('updateCode').value;
-            const price = document.getElementById('updatePrice').value;
-            const stock = parseInt(document.getElementById('updateStock').value);
-            const category = document.getElementById('updateCategory').value;
-            const owner = document.getElementById('user-email').textContent;
-             const updatedProduct = {};
+                const updatedProduct = {};
 
-                
-            console.log(productId, title, description, code, price, stock, category, owner);
+                const titleInput = document.getElementById('updateTitle');
+                if (titleInput.value.trim() !== '') {
+                    updatedProduct.title = titleInput.value;
+                }
 
+                const descriptionInput = document.getElementById('updateDescription');
+                if (descriptionInput.value.trim() !== '') {
+                    updatedProduct.description = descriptionInput.value;
+                }
 
-   
-    fetch(`/api/products/${productId}`, {
+                const codeInput = document.getElementById('updateCode');
+                if (codeInput.value.trim() !== '') {
+                    updatedProduct.code = codeInput.value;
+                }
+
+                const priceInput = document.getElementById('updatePrice');
+                if (priceInput.value.trim() !== '') {
+                    updatedProduct.price = parseFloat(priceInput.value);
+                }
+
+                const stockInput = document.getElementById('updateStock');
+                if (stockInput.value.trim() !== '') {
+                    updatedProduct.stock = parseInt(stockInput.value);
+                }
+
+                const categoryInput = document.getElementById('updateCategory');
+                if (categoryInput.value.trim() !== '') {
+                    updatedProduct.category = categoryInput.value;
+                }
+
+                const thumbnailsInput = document.getElementById('updateThumbnails');
+                if (thumbnailsInput.value.trim() !== '') {
+                    updatedProduct.thumbnails = thumbnailsInput.files;
+                }
+
+                fetch(`/api/products/${productId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({productId, title, description, code, price, stock, category, owner}),
+                    body: JSON.stringify(updatedProduct),
                 })
-
-    .then(response => {
-        if (response.ok) {
-            document.getElementById('updateProductId').value = '';
-            document.getElementById('updateTitle').value = '';
-            document.getElementById('updateDescription').value = '';
-            document.getElementById('updateCode').value = '';
-            document.getElementById('updatePrice').value = '';
-            document.getElementById('stock').value = '';
-            document.getElementById('updateStock').value = '';
-            document.getElementById('updateThumbnails').value = '';
-
-            setTimeout(() => {
-                location.reload();
-            }, 500);
-        } else {
-            console.error('Error al crear el producto:', response.statusText);
-        }
-    })
-    .catch(error => console.error('Error al crear el producto:', error));
-
-
+                    .then(response => {
+                        if (response.ok) {
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);
+                            console.log('Producto actualizado exitosamente');
+                        } else {
+                            console.error('Error al actualizar el producto:', response.statusText);
+                        }
+                    })
+                    .catch(error => console.error('Error al actualizar el producto:', error));
    });        
 
    // Función para buscar producto por ID
-function searchProductById() {
+/*function searchProductById() {
     const productId = document.getElementById('updateProductId').value;
 
-    fetch(`/api/products/search?id=${productId}`,{
-            method: 'GET',
-                    headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ title, description, code, price, stock, category, owner }),               
+    fetch(`/api/products/${productId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al buscar el producto');
-            }
-            return response.json();
-        })
-        .then(product => {
-            // Rellenar los campos del formulario con los detalles del producto encontrado
-            document.getElementById('updateTitle').value = product.title || '';
-            document.getElementById('updateDescription').value = product.description || '';
-            document.getElementById('updateCode').value = product.code || '';
-            document.getElementById('updatePrice').value = product.price || '';
-            document.getElementById('updateStock').value = product.stock || '';
-            document.getElementById('updateCategory').value = product.category || '';
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al buscar el producto');
+        }
+        console.log(response)
+        return response.json(); // Parse response body as JSON
+    })
+    .then(product => {
+        console.log(product)
+        // Access product properties and update UI
+        document.getElementById('updateTitle').value = product.title || '';
+        document.getElementById('updateDescription').value = product.description || '';
+        document.getElementById('updateCode').value = product.code || '';
+        document.getElementById('updatePrice').value = product.price || '';
+        document.getElementById('updateStock').value = product.stock || '';
+        document.getElementById('updateCategory').value = product.category || '';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}*/
 
-           
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-}
 
 // Event listener para el botón de búsqueda de producto por ID
-document.getElementById('searchProductBtn').addEventListener('click', searchProductById);
+//document.getElementById('searchProductBtn').addEventListener('click', searchProductById);
 
 document.getElementById('deleteProductBtn').addEventListener('click', deleteProduct);
 
-            document.getElementById('createProductBtn').addEventListener('click', createProduct);
+           // document.getElementById('createProductBtn').addEventListener('click', createProduct);
 
-            document.getElementById('updateProductBtn').addEventListener('click', updateProduct);
+            //document.getElementById('updateProductBtn').addEventListener('click', updateProduct);
 
 
             function deleteProduct() {
@@ -245,6 +256,10 @@ document.getElementById('deleteProductBtn').addEventListener('click', deleteProd
                             if (productElement) {
                                 productElement.remove();
                             }
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);
+                            console.log('Producto eliminado exitosamente');
                         } else {
                             console.error('Error al eliminar el producto:', response.statusText);
                         }

@@ -12,7 +12,7 @@ cartsRouter.get('/:cid', cartController.getCart);
 
 cartsRouter.post('/:cid/product/:pid', cartController.addProductToCart);
 
-//cartsRouter.delete('/:cid/products/:pid', cartController.removeProductFromCart);
+cartsRouter.delete('/:cid/products/:pid', cartController.deleteProductFromCart);
 
 //cartsRouter.put('/:cid', cartController.updateCart);
 

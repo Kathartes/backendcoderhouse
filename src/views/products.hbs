@@ -13,7 +13,7 @@
     <div class="user">
         <p>Email:<span class="user-email">{{user.email}}</span></p>
         <p>Rol:{{user.role}}</p>
-        <p id="cartId">ID Carrito: {{user.cart}}</p>
+        <p>ID Carrito: <span id="cartId">{{user.cart}}</span></p>
         
     </div>
 </header>
@@ -23,16 +23,12 @@
         <div class="login form" id="login">
             <details>
                 <summary>Carrito</summary>
-                    <ul class="carts">
-                    {{#each cart.product}}
-                    <li class="product">
-                    <p>ID: {{cart.product._id}}</p> 
-                    <p>Title: {{cart.product.title}}</p> 
-                    <p>Code: {{cart.product.code}}</p> 
-                    <p>Price: ${{cart.product.price}}</p> 
-                    </li>
+                    <ul class="carts" id="cart">
+                    {{#each user.cart.products}}
+                 
                     {{/each}}
                     </ul>
+                    <p id="total"><strong>Total a Pagar: </strong></p>
                     <button type="submit" id="checkoutbtn">Realizar Pedido</button>
             </details>
         </div>
@@ -48,7 +44,7 @@
     <li><img class="image" src="{{this}}" alt="Thumbnail"></li>
     {{/each}}
     </ul>
-     <p id="productId">ID: {{_id}}</p> 
+     <p id="{{_id}}">{{_id}}</p> 
      <p>Title: {{title}}</p> 
     <p>Description: {{description}}</p> 
     <p>Code: {{code}}</p> 
@@ -57,7 +53,7 @@
     <p>Stock: {{stock}}</p> 
     <p>Category: {{category}}</p> 
     <p>Owner: {{owner}}</p> 
-    <p>Quantity: </p><input id="quantity{{_id}}" type="number">
+    <p>Quantity: </p><input id="quantity{{_id}}" type="number" value="1" min="1" >
     <button type="button" id="addToCart">Agregar al carrito</button>
     </li>
     {{/each}}
@@ -67,27 +63,112 @@
 
 
 <script>
-
-    document.getElementById('addToCart').addEventListener('click', addToCart);
-    document.getElementById('checkoutBtn').addEventListener('click', checkoutCart);
     
+    document.addEventListener('DOMContentLoaded', function() {
+       const addToCartButtons = document.querySelectorAll('#addToCart');
+       
+       const cartId = document.getElementById(`cartId`).innerText
+       const totalAmountDisplay = document.getElementById('total');
+       const removeFromCartButtons = document.querySelectorAll('.removeFromCart');
+    
+    addToCartButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            
+            const productId = button.parentElement.querySelector('p').getAttribute('id');
+            const quantity = document.getElementById(`quantity${productId}`).value
+            
+            fetch(`/api/carts/${cartId}/product/${productId}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ quantity }),
+                    });
 
+                });
+                
+    });
 
-async function addToCart(){
-    const cartId = document.getElementById('cartId')
-    const productId = document.getElementById('productId')
-    const quantityInput = document.getElementById(`quantity${productId}`)
-    const quantity = parseInt(quantityInput.value) || 1;
+    function renderCart(cart) {
+      let totalPrice = 0;
+      const cartList = document.getElementById('cart');
+      cartList.innerHTML = '';
 
-    fetch(`/api/carts/${cartId}/product/${productId}`,{
-        method: 'POST',
+      if (cart && cart.products) {
+        cart.products.forEach(product => {
+          const listItem = document.createElement('li');
+          listItem.innerHTML = `
+          <p><strong>ID: </strong><span id="productId">${product.productId._id}</span></p>
+          <p><strong>Producto: </strong>${product.productId.title}</p>
+          <p><strong>Descripción: </strong>${product.productId.description}</p>
+          <p><strong>Código: </strong>${product.productId.code}</p>
+          <p><strong>Categoría: </strong>${product.productId.category}</p>
+          <p><strong>Precio unitario: </strong>$
+          <strong>${product.productId.price}</strong>
+        </p>
+        <p><strong>Cantidad: </strong>${product.quantity}</p>
+        <button class="remove-from-cart-btn" id="${product.productId._id}">Eliminar del carrito</button>
+      `;
+          const removeButton = listItem.querySelector('.remove-from-cart-btn');
+          removeButton.addEventListener('click', () => removeFromCart(product.productId._id));
+
+          const productPrice = parseFloat(product.productId.price);
+          const productTotalPrice = productPrice * product.quantity;
+          totalPrice += productTotalPrice;
+
+          cartList.appendChild(listItem);
+        });
+      }
+
+      totalAmountDisplay.textContent = `Total a Pagar: $${totalPrice.toFixed(2)}`;
+    }
+     fetch(`/api/carts/${cartId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Error en la solicitud: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        renderCart(data.cart);
+      })
+      .catch(error => {
+        console.error('Error en la solicitud de obtener el carrito:', error);
+      });
+
+      function clearCart() {
+      fetch(`/api/carts/${cartId}`, {
+        method: 'DELETE',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ quantity }),
-    })
+      })
+        .then(response => response.json())
+        .then(data => {
+          renderCart(data.cart);
+        })
+        .catch(error => console.error('Error al vaciar el carrito:', error));
+    }
 
-}
-    
+    function removeFromCart(productId) {
+
+    //const productId = document.getElementById('productId').innerText
+
+      fetch(`/api/carts/${cartId}/products/${productId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      })
+        .then(response => response.json())
+        .then(data => {
+          fetch(`/api/carts/${cartId}`)
+            .then(response => response.json())
+            .then(data => {
+              renderCart(data.cart);
+            })
+            .catch(error => console.error('Error al obtener el carrito actualizado:', error));
+        })
+        .catch(error => console.error('Error al eliminar del carrito:', error));
+    }
+
+
+});
 </script>

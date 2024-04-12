@@ -66,17 +66,21 @@ class CartController{
             const user = await this.userService.getUserByFilter({cart: cartId})
             const product = await this.productService.getProductByFilter({ _id: productId})
 
+            console.log(cartId, productId, quantity + "antes de entrar")
             console.log(user.email)
             console.log(product.owner)
             //if (!resp) return res.status(404).json({status: 'error', message: 'Cart not found'})
             if(user.email === product.owner){
+                
                 console.log("no podes agregar un producto tuyo")
                 throw new Error("Este producto es tuyo")
             }
             if(cartProduct) {
+                console.log(cartId, productId, quantity + "adentro de upgrade quantity")
                 await this.cartService.updateProductQuantity(cartId, productId, quantity)
                 
             }else {
+                console.log(cartId, productId, quantity + "adentro de agregar producto")
                  await this.cartService.addProductToCart(cartId, productId, quantity)
             }
 
@@ -94,7 +98,7 @@ class CartController{
     deleteProductFromCart  = async (req, res) => {
         try {
             const { cid, pid } = req.params
-            const resp = await cartService.deleteProductFromCart(cid, pid)
+            const resp = await cartService.deleteProduct(cid, pid)
             if (!resp) return cartService.status(404).json({status: 'error', message: 'Cart not found'})
             res.status(200).json({
                 status: 'success',

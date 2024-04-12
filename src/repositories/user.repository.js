@@ -7,7 +7,7 @@ class UserRepository {
     getUserByFilter = async(filter) => await this.dao.getBy(filter)
 
     createUser = async(user)=> await this.dao.create(user)
-
+    
     updateUser = async(uId, updateUser)=> await this.dao.update(uId, updateUser)
 
     deleteUser = async(uId)=> await this.dao.delete(uId)

@@ -70,6 +70,7 @@
        const cartId = document.getElementById(`cartId`).innerText
        const totalAmountDisplay = document.getElementById('total');
        const removeFromCartButtons = document.querySelectorAll('.removeFromCart');
+       
     
     addToCartButtons.forEach(function(button) {
         button.addEventListener('click', function(event) {
@@ -169,6 +170,17 @@
         .catch(error => console.error('Error al eliminar del carrito:', error));
     }
 
+    document.getElementById('checkoutbtn').addEventListener('click',  function() {
+
+        console.log(cartId)
+
+         fetch(`/api/carts/${cartId}/purchase`, {
+          method: 'POST',
+          credentials: 'include',
+
+        });
+    
+    });
 
 });
 </script>

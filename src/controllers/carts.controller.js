@@ -1,5 +1,8 @@
 const { userService, productService, cartService, ticketService } = require('../repositories/services')
-
+const { generateUniqueCode } = require('../helpers/cartHelper')
+const { EErrors } = require('../services/errors/enums');
+const { generatePurchaseCartErrorInfo } = require('../services/errors/errorGenerator');
+const CustomError = require('../services/errors/CustomError')
 
 class CartController{
     constructor(){
@@ -132,6 +135,28 @@ class CartController{
         })
     }
 
+    updateCart = async (req, res) => {
+        try {
+            const cartId = req.params.cid;
+            const products = req.body.products || [];
+            const updatedCart = await this.cartService.updateCart(cartId, products);
+            res.json({ cart: updatedCart });
+        } catch (error) {
+            logger.error(error.message);
+            res.status(400).send('Bad Request');
+        }
+    }
+    removeAllProducts = async (req, res) => {
+        try {
+            const cartId = req.params.cid;
+            const updatedCart = await this.cartService.removeAllProducts(cartId);
+            res.json({ cart: updatedCart });
+        } catch (error) {
+            logger.error(error.message);
+            res.status(400).send('Bad Request');
+        }
+    }
+
     purchaseCart = async (req, res, next) => {
         try {
             const cartId = req.params.cid;
@@ -142,7 +167,7 @@ class CartController{
             let totalAmount = 0;
 
             for (const productData of products) {
-                const product = await this.productService.getProductBy(productData.productId);
+                const product = await this.productService.getProductByFilter(productData.productId);
                 
                 if (!product) {
                     return res.status(404).json({ message: `Producto ${productData.productId} no encontrado` });
@@ -185,8 +210,7 @@ class CartController{
                 return res.status(200).json({ message: 'Compra finalizada con éxito', ticket });
             }
         } catch (error) {
-            //logger.error(error);
-            //return res.status(500).json({ message: 'Error en el servidor' });
+     
             next(error)
         }
     }

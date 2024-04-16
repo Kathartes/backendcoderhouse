@@ -9,6 +9,7 @@ class TicketRepository {
 
     get = async () => await this.dao.get()
    
+    getTicketById = async (id) => await this.dao.getById(id)
 }
 
 module.exports = { TicketRepository }

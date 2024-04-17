@@ -31,8 +31,30 @@ class UserController{
     updateUser = async(req, res)=>{
         try{
         const userId = req.params.uid;
-        const updatedUser = await this.userService.updateUser(userId, req.body);
-        res.json({updatedUser});
+        const user  = await this.userService.getUserByFilter(userId);
+       
+
+        if(user.role === 'user' && user.status === true){
+          await this.userService.updateUser(userId, { role: 'premium'});
+        }
+        else if(user.role === 'premium') {
+          await this.userService.updateUser(userId, { role: 'user'})
+        }
+        const userUpdated = await this.userService.getUserByFilter(userId)
+        const token = createToken({ id: userUpdated._id, first_name: userUpdated.first_name, last_name: userUpdated.last_name, email: userUpdated.email, cart: userUpdated.cart, role: userUpdated.role, profile: userUpdated.profile, status: userUpdated.status })
+
+        if (result.error) {
+            return res.send(result.error);
+          }
+          res.cookie('token', token, {
+            maxAge: 3600000,
+            httpOnly: true,
+        
+          }).json({
+            status: 'success',
+            message: 'role change',
+          })
+        
         }
         catch(error){
             res.status(500).send('Error al modificar usuario')
@@ -51,7 +73,7 @@ class UserController{
             console.error('Ese Email ya esta en uso.');
             return { error: 'Ese Email ya está en uso.' };
           }
-          console.log( firstName, lastName, email, cart, password, age, role )
+          console.log( firstName, lastName, email, cart, password, age, role, documents )
           console.log(cart._id)
           const cartId = await this.cartService.getCart({_id : cart._id})
           console.log (cartId._id + "este es el id del cart")
@@ -62,7 +84,8 @@ class UserController{
             password: await createHash(password),
             age,
             cart: cartId._id,
-            role
+            role,
+            documents: []
         } 
         console.log(user)
         const result = await this.userService.createUser(user);

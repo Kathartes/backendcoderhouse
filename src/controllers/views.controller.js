@@ -49,6 +49,15 @@ class ViewsController{
         const decodedToken = jwt.verify(token, configObject.jwt_secret_key )
         res.render('manager', { title: 'manager', style: 'manager.css', body: 'manager', products, user: decodedToken});
     }
+    role = async (req, res) => {
+
+        const token = req.cookies.token
+        if (!token){
+            return res.redirect("/login")
+        }
+        const decodedToken = jwt.verify(token, configObject.jwt_secret_key )
+        res.render('role', { title: 'role', style: 'manager.css', body: 'role', user: decodedToken });
+    }
 }
 
 module.exports = ViewsController

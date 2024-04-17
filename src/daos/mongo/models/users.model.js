@@ -35,6 +35,23 @@ const userSchema = Schema({
       role: {
         type: String,
         required: true
+      },
+      documents: [{
+        name: { type: String },
+        reference: { type: String }
+      }],
+      last_connection: {
+        type: Date,
+        default: Date.now
+      },
+      profile: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      status: {
+        type: Boolean,
+        default: false
       }
 })
 

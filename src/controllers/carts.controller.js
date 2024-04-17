@@ -112,10 +112,10 @@ class CartController{
         }
     }
 
-    deleteCart = async (req, res) => {
+    removeAllProducts = async (req, res) => {
         try {
             const { cid } = req.params
-            const resp = await cartService.deleteCart(cid) 
+            const resp = await cartService.removeAllProducts(cid) 
             if (!resp) return res.status(404).json({status: 'error', message: 'Cart not found'})
             res.status(200).json(resp)
         } catch (error) {
@@ -135,33 +135,13 @@ class CartController{
         })
     }
 
-    updateCart = async (req, res) => {
-        try {
-            const cartId = req.params.cid;
-            const products = req.body.products || [];
-            const updatedCart = await this.cartService.updateCart(cartId, products);
-            res.json({ cart: updatedCart });
-        } catch (error) {
-            logger.error(error.message);
-            res.status(400).send('Bad Request');
-        }
-    }
-    removeAllProducts = async (req, res) => {
-        try {
-            const cartId = req.params.cid;
-            const updatedCart = await this.cartService.removeAllProducts(cartId);
-            res.json({ cart: updatedCart });
-        } catch (error) {
-            logger.error(error.message);
-            res.status(400).send('Bad Request');
-        }
-    }
+   
 
     purchaseCart = async (req, res, next) => {
         try {
             const cartId = req.params.cid;
             const cart = await this.cartService.getCart(cartId);
-            const user = await this.userService.getUser({ cart: cartId });
+            const user = await this.userService.getUserByFilter({ cart: cartId });
             const products = cart.products;
             const failedProducts = [];
             let totalAmount = 0;

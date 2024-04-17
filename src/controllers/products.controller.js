@@ -36,6 +36,9 @@ class ProductController{
             if(owner === 'adminCoder@coder.com') {
                 updatedOwner ='Admin'
             }
+
+        const thumbnails = req.files.map(file => `/files/products/${file.filename}`);   
+
         const newProduct = await this.productService.createProduct({
             title, 
             description, 
@@ -43,7 +46,8 @@ class ProductController{
             price, 
             stock, 
             category, 
-            owner: updatedOwner
+            owner: updatedOwner,
+            thumbnails
         });
         res.json({ product: newProduct })
         }

@@ -29,6 +29,7 @@
                     {{/each}}
                     </ul>
                     <p id="total"><strong>Total a Pagar: </strong></p>
+                    <button type="button" id="removeall">Vaciar carrito</button>
                     <button type="submit" id="checkoutbtn">Realizar Pedido</button>
             </details>
         </div>
@@ -70,7 +71,8 @@
        const cartId = document.getElementById(`cartId`).innerText
        const totalAmountDisplay = document.getElementById('total');
        const removeFromCartButtons = document.querySelectorAll('.removeFromCart');
-       
+       const removeAllProducts = document.getElementById('removeall').addEventListener('click', clearCart)
+       const checkout = document.getElementById('checkoutbtn').addEventListener('click',  checkoutCart) 
     
     addToCartButtons.forEach(function(button) {
         button.addEventListener('click', function(event) {
@@ -86,6 +88,7 @@
                     },
                     body: JSON.stringify({ quantity }),
                     });
+                    
 
                 });
                 
@@ -138,17 +141,7 @@
         console.error('Error en la solicitud de obtener el carrito:', error);
       });
 
-      function clearCart() {
-      fetch(`/api/carts/${cartId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      })
-        .then(response => response.json())
-        .then(data => {
-          renderCart(data.cart);
-        })
-        .catch(error => console.error('Error al vaciar el carrito:', error));
-    }
+     
 
     function removeFromCart(productId) {
 
@@ -170,17 +163,34 @@
         .catch(error => console.error('Error al eliminar del carrito:', error));
     }
 
-    document.getElementById('checkoutbtn').addEventListener('click',  function() {
+    function checkoutCart() {
 
         console.log(cartId)
 
          fetch(`/api/carts/${cartId}/purchase`, {
           method: 'POST',
           credentials: 'include',
-
-        });
+        }).then(data => {
+            renderCart(data.cart);
+        })
+ 
     
-    });
+    };
+
+    function clearCart(){
+
+        console.log(cartId)
+        fetch(`api/carts/${cartId}`, {
+            method: 'DELETE',
+            credentials: 'include',
+        })
+        .then(response => response.json())
+        .then(data => {
+            renderCart(data.cart);
+        })
+        .catch(error => console.error('Error al obtener el carrito actualizado:', error));
+    }   
+    
 
 });
 </script>

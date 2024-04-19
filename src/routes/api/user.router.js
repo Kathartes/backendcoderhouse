@@ -3,6 +3,7 @@ const UserController = require('../../controllers/user.controller');
 const passport =require('passport');
 const { authenticationJwtCurrent } = require('../../middlewares/jwtPassport.middleware');
 const { passportCall } = require('../../utils/passportCall')
+const { uploader } = require('../../utils/multer')
 
 const userRouter = Router()
 const userController = new UserController()
@@ -22,6 +23,11 @@ userRouter.get('/current', passportCall('jwt'), authenticationJwtCurrent, userCo
 
 userRouter.delete('/:uid', userController.deleteUser)
 
+userRouter.post('/:uid/documents', uploader.fields([{name: 'identificacion', maxCount: 1}, 
+                                                    {domicilio: 'domicilio', maxCount: 1}, 
+                                                    {cuenta: 'cuenta', maxCount: 1}]), userController.uploadFiles)
+
+userRouter.put('/premium/:uid', userController.updateUser)
 
 module.exports = userRouter;
 

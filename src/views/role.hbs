@@ -16,33 +16,114 @@
             <p class="user-email" id="user-email" >{{user.email}}</p>
             <p>Rol:{{user.role}}</p>
             <p>ID Carrito: {{user.cart._id}}</p>
+            <p>id User:<span id="user-id">{{user._id}}</span></p>
             
         </div>
 </header>
 
 <section>
-<form action="">
-    <label for=""></label>
-    <input type="text">
-    <label for=""></label>
-    <input type="text">
-    <label for=""></label>
-    <input type="text">
-    <button></button>
+<form action="" id="documents-form">
+    <label for="identificacion"></label>
+    <input type="file" id="identificacion" name="identificacion">
+    <label for="domicilio"></label>
+    <input type="file" id="domicilio" name="domicilio">
+    <label for="cuenta"></label>
+    <input type="file" id="cuenta" name="cuenta">
+    <button type="submit" id="documents-btn"></button>
 </form>
-<form action="">
-    <label for=""></label>
-    <input type=""> 
-    <button></button>
+<form action="" id="profile-form">
+    <label for="profile"></label>
+    <input type="file" id="profile" name="profile"> 
+    <button type="submit" id="profile-btn"></button>
 </form>
-<form action="">
-    <label for=""></label>
-    <input type="radio">
-    <label for=""></label>
-    <input type="radio">
-    <button></button>
+<form action="" id="role-form">
+    <label for="user"></label>
+    <input type="radio" id="user" name="role" value="user">
+    <label for="premium"></label>
+    <input type="radio" id="premium" name="role" value="premium">
+    <button type="submit" id="role-btn"></button>
 </form>
 </section>
+
 <script>
-    
+    document.addEventListener('DOMContentLoaded'), function () {
+
+        const userId = document.getElementById('user-id').textContent
+        
+
+
+        document.getElementById('documents-form').addEventListener('submit', function(event){
+            event.preventDefault()
+            uploadDocuments();
+        })
+         document.getElementById('profile-form').addEventListener('submit', function(event){
+            event.preventDefault()
+            uploadProfile();
+        })
+         document.getElementById('role-form').addEventListener('submit', function(event){
+            event.preventDefault()
+            updateRole();
+        })
+
+        function uploadDocuments() {
+            const formData = new FormData();
+            formData.append('identificacion', document.getElementById('identificacion').files[0])
+            formData.append('domicilio', document.getElementById('domicilio').files[0])
+            formData.append('cuenta', document.getElementById('cuenta').files[0])
+
+            fetch(`/api/users/${userId}/documents`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response =>{
+                if (response.ok) {
+                    console.log('Documentos subidos!')
+                    window.location.reload();
+                } else {
+                    console.error('Error al subir documentos', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error al subir documentos', error))
+        }
+        function uploadProfile() {
+            const formData = new FormData();
+            formData.append('profile', document.getElementById('profile').files[0]);
+
+            fetch(`/api/user/${userId}/documents`, {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Perfil subido exitosamente');
+                        window.location.reload();
+                    } else {
+                        console.error('Error al subir perfil:', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Error al subir perfil:', error));
+        }
+         function updateUserRole() {
+            const role = document.querySelector('input[name="role"]:checked').value;
+
+            fetch(`/api/user/premium/${userId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ role }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Rol de usuario actualizado exitosamente');
+                        window.location.reload();
+                    } else {
+                        console.error('Error al actualizar el rol del usuario:', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Error al actualizar el rol del usuario:', error));
+        }
+
+    }
+
 </script>

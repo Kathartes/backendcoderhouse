@@ -16,4 +16,6 @@ router.get('/register', viewsController.register)
 
 router.get('/manager', viewsController.manager);
 
+router.get('/role', viewsController.role);
+
 module.exports = router

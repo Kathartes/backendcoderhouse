@@ -73,7 +73,7 @@ class UserController{
             console.error('Ese Email ya esta en uso.');
             return { error: 'Ese Email ya está en uso.' };
           }
-          console.log( firstName, lastName, email, cart, password, age, role, documents )
+          console.log( firstName, lastName, email, cart, password, age, role)
           console.log(cart._id)
           const cartId = await this.cartService.getCart({_id : cart._id})
           console.log (cartId._id + "este es el id del cart")
@@ -128,7 +128,7 @@ class UserController{
           return res.status(401).send('Contraseña inválida');
         }
     
-        const token = createToken({ id: user._id, first_name: user.first_name, last_name: user.last_name, email, cart: user.cart, role: user.role })
+        const token = createToken({ id: user._id, first_name: user.first_name, last_name: user.last_name, email, cart: user.cart, role: user.role, status: user.status })
         res.cookie('token', token, {
           maxAge: 3600000,
           httpOnly: true,
@@ -149,6 +149,48 @@ class UserController{
         catch(error){
             res.status(500).send('Error al eliminar usuario')
         }
+    }
+    uploadFiles = async (req, res) => {
+      try{
+      const userId = req.params.uid;
+      const { identificacion, domicilio, cuenta, profile } = req.files;
+      const user = await this.userService.getUserBy(userId);
+  
+      if (user.role === 'user' && (identificacion && domicilio && cuenta) && !profile && user.status === false) {
+        console.log('aqui en documents')
+        const updatedDocuments = [
+          { name: 'Identificación', reference: `/files/documents/${identificacion[0].filename}` },
+          { name: 'Comprobante de domicilio', reference: `/files/documents/${domicilio[0].filename}` },
+          { name: 'Comprobante de estado de cuenta', reference: `/files/documents/${cuenta[0].filename}` }
+        ];
+  
+        
+        await this.userService.updateUser(userId, { documents: updatedDocuments, status: true });
+      }
+      else if (profile && (!identificacion || !domicilio || !cuenta)) {
+        console.log('aqui en profile')
+        const updatedProfile = `/files/profiles/${profile[0].filename}`;
+  
+       
+        await this.userService.updateUser(userId, { profile: updatedProfile });
+      }
+      const userUpdated = await this.userService.getUserBy(userId);
+        const token = createToken({ id: userUpdated._id, first_name: userUpdated.first_name, last_name: userUpdated.last_name, email: userUpdated.email, cart: userUpdated.cart, role: userUpdated.role, profile: userUpdated.profile, status: userUpdated.status })
+        res.cookie('token', token, {
+          maxAge: 3600000,
+          httpOnly: true,
+          
+        }).json({
+          status: 'success',
+          message: 'Role Updated',
+          redirectUrl: '/role',
+        })
+        
+        logger.info(user)
+      } catch (error) {
+        logger.error(error.message);
+        res.status(404).send('User Not Found');
+      }
     }
     
 }

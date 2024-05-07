@@ -17,6 +17,9 @@ router.use((err, req, res, next)=>{
     console.log(err)
     res.status(500).send('Error Server')
 })
+router.get('/',(req,res)=>{
+    res.redirect('/login')
+})
 
 /*const specs = swaggerJsDoc(swaggerOptions)
 

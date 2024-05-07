@@ -4,7 +4,7 @@
         </div>
     <div>
         <nav>
-            <a class = "box" id="chat-btn">Chat</a>
+            <a href = "/admin" class = "box" id="chat-btn">Admin</a>
             <a href = "/role" class = "box"id="role-btn">Rol</a>
             <a href = "/manager" class = "box" id="manager-btn">Manager</a>
             <a href ="/login"class = "box" id="logout-btn">Salir</a>
@@ -73,7 +73,24 @@
        const removeFromCartButtons = document.querySelectorAll('.removeFromCart');
        const removeAllProducts = document.getElementById('removeall').addEventListener('click', clearCart)
        const checkout = document.getElementById('checkoutbtn').addEventListener('click',  checkoutCart) 
+       const logoutBtn = document.getElementById('logout-btn').addEventListener('click', logout)
     
+    function logout() {
+        fetch ('/api/users/logout', {
+            method: 'GET',
+            credentials: 'include'
+        })
+        .then(response => {
+          if (response.ok) {
+            goToPage('/login');
+          } else {
+            console.error('Error en el logout:', response.statusText);
+          }
+        })
+        .catch(error => console.error('Error en el logout:', error));
+    }
+
+
     addToCartButtons.forEach(function(button) {
         button.addEventListener('click', function(event) {
             

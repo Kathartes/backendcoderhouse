@@ -260,3 +260,13 @@
   .logo h1 {
     margin-left: 10px;
   }
+
+  .role-section {
+    display: flex;
+    
+  }
+
+  .role-form{
+    display: flex;
+    flex-direction: column;
+  }

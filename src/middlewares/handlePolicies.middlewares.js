@@ -19,7 +19,7 @@ exports.handlePolicies = policies => (req, res, next) => {
         return res.status(401).send({ status: 'error', error: 'Unauthorized' });
     }
 
-    //Verifica si el usuario es un administrador o un usuario normal
+    
     if (policies.includes('ADMIN') && user.role.toUpperCase() === 'ADMIN') {
      
         req.user = user;

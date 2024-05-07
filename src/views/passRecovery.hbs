@@ -1,0 +1,14 @@
+{{#if user}}
+<div class="container">
+<div class="login form">
+      <header>Recuperar Contraseña</header>
+      <form id="passRecoveryForm" action="/api/users/resetpass" method="POST" >
+        <input type="email" id="email" name="email" value="{{user.email}}" readonly>
+        <input type="password" id="newPassword" name="newPassword" placeholder="Nueva Contraseña" required>
+        <input type="password" id="repPassword" name="repPassword" placeholder="Repetir Contraseña" required>
+
+        <button type="submit" class="button" >Aceptar</button>
+      </form>
+  </div>
+</div>
+{{/if}}

@@ -19,6 +19,9 @@ class UserDaoMongo {
     async delete(uId){
         return await this.model.findByIdAndDelete(uId)
     }
+    async deleteTime(filter){
+        return await this.model.deleteMany(filter)
+    }
 }
 
 module.exports = UserDaoMongo;

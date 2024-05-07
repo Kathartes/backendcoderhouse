@@ -1,0 +1,112 @@
+<header>
+    <div>
+        <a class="logo" href="/products"><h1 >Ecommerce</h1></a>
+        </div>
+    <div>
+        <nav>
+            <a href = "/admin" class = "box" id="chat-btn">Admin</a>
+            <a href = "/role" class = "box"id="role-btn">Rol</a>
+            <a href = "/manager" class = "box" id="manager-btn">Manager</a>
+            <a href ="/login"class = "box" id="logout-btn">Salir</a>
+        </nav>
+    </div>
+    
+        <div class="user">
+
+            <p class="user-email" id="user-email" >{{user.email}}</p>
+            <p>Rol:{{user.role}}</p>
+            <p>ID Carrito: {{user.cart._id}}</p>
+            
+        </div>
+</header>
+<section>
+    <article>
+        <ul>
+            {{#each users}}
+                <li class="user-info" >
+                    <p id="{{_id}}">{{first_name}}</p> 
+                    <p>{{last_name}}</p> 
+                    <p>{{email}}</p> 
+                    <p class="role" id="{{role}}">{{role}}</p>
+                    <button type="button" class="role-change" id="role-change" >Cambiar rol</button>
+                    <button type="submit" class="delete-user" id="delete-user" >eliminar usuario</button>
+                </li>
+            {{/each}}
+            <button type="button" id="delete-inactive" >Eliminar los inactivos</button>
+        </ul>
+    </article>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const changeRole = document.querySelectorAll('#role-change');
+    const deleteUser = document.querySelectorAll('#delete-user')
+    const inactiveButton= document.getElementById('delete-inactive').addEventListener('click', deleteInactive )
+
+    changeRole.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            const userId =  button.parentElement.querySelector('p').getAttribute('id');
+            const role = button.parentElement.querySelector('.role').getAttribute('id')
+            console.log(`id del usuario en el cambio de rol: ${userId}`)
+           
+
+            fetch(`/api/users/admin/${userId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ role }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Rol cambiado correctamente');
+                   window.location.reload();
+                } else {
+                    console.error('No se pudo cambiar el rol');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+
+     deleteUser.forEach(function(submit) {
+        submit.addEventListener('click', function(event) {
+            const userId = submit.parentElement.querySelector('p').getAttribute('id');
+            console.log(`estoy en el eliminar de la vista ${userId}`)
+           
+
+            fetch(`/api/users/${userId}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Usuario eliminado');
+                    window.location.reload();
+                } else {
+                    console.error('No se pudo eliminar el usuario');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+
+    function deleteInactive (){
+        fetch(`/api/users/admin/inactives`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+                if (response.ok) {
+                    console.log('Usuarios inactivos eliminados');
+                    window.location.reload();
+                } else {
+                    console.error('No se pudieron eliminar los usuarios');
+                }
+            })
+    }
+});
+
+</script>

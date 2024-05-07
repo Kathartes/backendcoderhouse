@@ -4,7 +4,7 @@
         </div>
     <div>
         <nav>
-            <a class = "box" id="chat-btn">Chat</a>
+            <a href = "/admin" class = "box" id="chat-btn">Admin</a>
             <a class = "box"id="role-btn">Rol</a>
             <a href = "/manager" class = "box" id="manager-btn">Manager</a>
             <a href ="/login"class = "box" id="logout-btn">Salir</a>
@@ -15,41 +15,38 @@
 
             <p class="user-email" id="user-email" >{{user.email}}</p>
             <p>Rol:{{user.role}}</p>
-            <p>ID Carrito: {{user.cart._id}}</p>
-            <p>id User:<span id="user-id">{{user._id}}</span></p>
+            <p>ID Carrito: {{user.cart}}</p>
+            <p>id User:<span id="user-id">{{user.id}}</span></p>
             
         </div>
 </header>
 
-<section>
-<form action="" id="documents-form">
-    <label for="identificacion"></label>
+<section class="role-section">
+<form action="" id="documents-form" class="role-form">
+    <label for="identificacion">Identificacion:</label>
     <input type="file" id="identificacion" name="identificacion">
-    <label for="domicilio"></label>
+    <label for="domicilio">Domicilio</label>
     <input type="file" id="domicilio" name="domicilio">
-    <label for="cuenta"></label>
+    <label for="cuenta">Cuenta</label>
     <input type="file" id="cuenta" name="cuenta">
-    <button type="submit" id="documents-btn"></button>
+    <button type="submit" id="documents-btn">Subir documentos</button>
 </form>
-<form action="" id="profile-form">
-    <label for="profile"></label>
+<form action="" id="profile-form" class="role-form">
+    <label for="profile">Perfil</label>
     <input type="file" id="profile" name="profile"> 
-    <button type="submit" id="profile-btn"></button>
+    <button type="submit" id="profile-btn">Subir perfil</button>
 </form>
-<form action="" id="role-form">
-    <label for="user"></label>
+<form action="" id="role-form" class="role-form">
+    <label for="user">User</label>
     <input type="radio" id="user" name="role" value="user">
-    <label for="premium"></label>
+    <label for="premium">Premium</label>
     <input type="radio" id="premium" name="role" value="premium">
-    <button type="submit" id="role-btn"></button>
+    <button type="submit" id="role-btn">Marcar rol</button>
 </form>
 </section>
 
 <script>
-    document.addEventListener('DOMContentLoaded'), function () {
-
-        const userId = document.getElementById('user-id').textContent
-        
+    document.addEventListener('DOMContentLoaded', function () {
 
 
         document.getElementById('documents-form').addEventListener('submit', function(event){
@@ -62,14 +59,18 @@
         })
          document.getElementById('role-form').addEventListener('submit', function(event){
             event.preventDefault()
-            updateRole();
+            updateUserRole();
         })
 
         function uploadDocuments() {
+            const userId = document.getElementById('user-id').innerText
+            console.log(userId)
             const formData = new FormData();
             formData.append('identificacion', document.getElementById('identificacion').files[0])
             formData.append('domicilio', document.getElementById('domicilio').files[0])
             formData.append('cuenta', document.getElementById('cuenta').files[0])
+
+            console.log(formData)
 
             fetch(`/api/users/${userId}/documents`, {
                 method: 'POST',
@@ -86,10 +87,11 @@
             .catch(error => console.error('Error al subir documentos', error))
         }
         function uploadProfile() {
+            const userId = document.getElementById('user-id').innerText
             const formData = new FormData();
             formData.append('profile', document.getElementById('profile').files[0]);
 
-            fetch(`/api/user/${userId}/documents`, {
+            fetch(`/api/users/${userId}/documents`, {
                 method: 'POST',
                 body: formData,
             })
@@ -104,9 +106,10 @@
                 .catch(error => console.error('Error al subir perfil:', error));
         }
          function updateUserRole() {
+            const userId = document.getElementById('user-id').innerText
             const role = document.querySelector('input[name="role"]:checked').value;
 
-            fetch(`/api/user/premium/${userId}`, {
+            fetch(`/api/users/premium/${userId}`, {
                 method: 'PUT',
                 body: JSON.stringify({ role }),
                 headers: {
@@ -117,13 +120,11 @@
                     if (response.ok) {
                         console.log('Rol de usuario actualizado exitosamente');
                         window.location.reload();
-                    } else {
-                        console.error('Error al actualizar el rol del usuario:', response.statusText);
-                    }
+                    } 
                 })
                 .catch(error => console.error('Error al actualizar el rol del usuario:', error));
         }
 
-    }
+    })
 
 </script>

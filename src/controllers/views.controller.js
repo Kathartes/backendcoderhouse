@@ -34,6 +34,8 @@ class ViewsController{
     }
 
     login = async (req, res) => {  
+        
+
         res.render('login', { title: 'Login', style: 'login.css', body: 'login' });
     }
 
@@ -50,13 +52,42 @@ class ViewsController{
         res.render('manager', { title: 'manager', style: 'manager.css', body: 'manager', products, user: decodedToken});
     }
     role = async (req, res) => {
-
+        
         const token = req.cookies.token
         if (!token){
             return res.redirect("/login")
         }
         const decodedToken = jwt.verify(token, configObject.jwt_secret_key )
         res.render('role', { title: 'role', style: 'manager.css', body: 'role', user: decodedToken });
+    }
+    admin = async (req, res) => {
+        const users = await this.userService.getUser();
+        const token = req.cookies.token
+        if (!token){
+            return res.redirect("/login")
+        }
+        const decodedToken = jwt.verify(token, configObject.jwt_secret_key )
+        res.render('admin', { title: 'admin', style: 'manager.css', body: 'admin', users , user: decodedToken });
+    }
+    recover = async (req, res) => {
+
+        res.render('recover', { title: 'Password recovery', style: 'login.css', body: 'recover'});
+    }
+
+    passRecovery = async (req, res) => {
+        const token = req.params.token;
+    
+        if (!token) {
+            return res.redirect('/login');
+        }
+    
+        try {
+            const decodedToken = jwt.verify(token, configObject.jwt_secret_key);
+            res.render('passRecovery', { title: 'Password recovery', style: 'login.css', body: 'passRecovery', user: decodedToken });
+        } catch (error) {
+            console.error(error.message);
+            res.status(400).send('Invalid token');
+        }
     }
 }
 

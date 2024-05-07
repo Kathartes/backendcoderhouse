@@ -11,6 +11,8 @@ class UserRepository {
     updateUser = async(uId, updateUser)=> await this.dao.update(uId, updateUser)
 
     deleteUser = async(uId)=> await this.dao.delete(uId)
+
+    deleteUserTime = async(filter) => await this.dao.deleteTime(filter)
 }
 
 module.exports = { UserRepository}

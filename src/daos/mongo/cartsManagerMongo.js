@@ -40,12 +40,15 @@ class CartDaoMongo {
       { $inc: { 'products.$.quantity': quantity } }
     )
   }
-  
+
   async update(cartId, products) {
     return await this.model.updateOne(
       { _id: cartId },
       { $set: { products: products } }
     )
+  }
+  async delete(cid) {
+    return await this.model.findByIdAndDelete(cid);
   }
 
 }
